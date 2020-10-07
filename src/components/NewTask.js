@@ -24,23 +24,27 @@ export default function NewTask(props) {
     const classes = useStyles();
     const [openForm, setOpenForm] = React.useState(false);
     const [state, setState] = React.useState('');
-
     const handleClickOpen = () => {
         setOpenForm(true);
     };
-
     const handleClose = () => {
         setOpenForm(false);
     };
-
     const handleChangeState = (event) => {
         setState(event.target.value);
     };
-
-    const handleAdd = () => {
-        props.fun({description:document.getElementById("desc").value,status:state,dueDate:document.getElementById("date").value,responsible:{name:document.getElementById("resp").value}});
+    const addTask = async() =>{
+        await fetch('https://taskplanner2-ieti.azurewebsites.net/api/tasks/?code=/IePM5x2cWIzF0FbuSSKG0vxg58sMMtnbvJn6L16h7U1BByqdUZ/Sw==',{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({description:document.getElementById("desc").value,status:state,dueDate:document.getElementById("date").value,responsible:{name:document.getElementById("resp").value}})
+        });
         setOpenForm(false);
-  };
+        props.fun(1);
+    }
 
   return (
     <div>
@@ -109,7 +113,7 @@ export default function NewTask(props) {
                 <Button onClick={handleClose} color="primary">
                 Cancel
                 </Button>
-                <Button onClick={handleAdd} color="primary">
+                <Button onClick={addTask} color="primary">
                 Add
                 </Button>
             </DialogActions>

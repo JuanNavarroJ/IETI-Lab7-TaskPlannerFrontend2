@@ -11,18 +11,14 @@ function App() {
   const [userList ,setUserList] = React.useState([]); 
 
   useEffect (() => {
-    console.log(userList)
     fetch('http://taskplanner.centralus.azurecontainer.io:8080/users')
       .then(response => response.json())
       .then(data => {
-          console.log(data)
           data.map(user => {
-            console.log(user)
             setUserList(userList => [...userList, user]);
           })
       });
   }, []);
-  
   return (
     <Router>
       <div>

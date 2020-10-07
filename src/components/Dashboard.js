@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect }  from 'react';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -100,31 +100,38 @@ localStorage.setItem("name", "Juan David");
 localStorage.setItem("email", "juan.navarro@mail.escuelaing.edu.co");
 
 export default function Dashboard(props) {
-  const [tasks, setTasks] = React.useState([{description:"Implement Login View",status:"In Progress",dueDate:"2020-08-27",responsible:{name:"Juan Navarro",email:"juan.navarro@escuelaing"}},
-                {description:"Implement Login Controller",status:"Ready",dueDate:"2020-08-27",responsible:{name:"Juan Navarro",email:"juan.navarro@escuelaing"}},
-                {description:"Facebook Integration",status:"Completed",dueDate:"2020-08-27",responsible:{name:"Juan Navarro",email:"juan.navarro@escuelaing"}}]);
   const classes = useStyles();
   const theme = useTheme();
   const [openForm, setOpenForm] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [user, setUser] = React.useState({name:"Juan David",email:"Juan.navarro@mail.escuelaing.edu.co"});
   const [filters, setFilters] = React.useState([]);
-  const [state, setState] = React.useState('');
-  
+  const [state, setState] = React.useState(0);
+  const [taskList ,setTaskList] = React.useState([]); 
+
+  useEffect (() => {
+    setTaskList([]);
+    fetch('https://taskplanner2-ieti.azurewebsites.net/api/tasks/?code=/IePM5x2cWIzF0FbuSSKG0vxg58sMMtnbvJn6L16h7U1BByqdUZ/Sw==')
+      .then(response => response.json())
+      .then(data => {
+          data.response.map(task => {
+            setTaskList(taskList => [...taskList, task]);
+          })
+      });
+  }, [state]);
+
+  const handleUpdateTasks = (e) =>{
+    setState(state + e);
+  }
   const handleChangeUser = (algo) => {
     setUser(algo);
   };
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
   const handleDrawerClose = () => {
     setOpen(false);
   };  
-
-  const handleChangeTasks = (newTask) => {
-    setTasks(tasks.concat(newTask));
-  };
 
   return (
     <div className={classes.root}>
@@ -206,7 +213,8 @@ export default function Dashboard(props) {
         <div className={classes.drawerHeader} />
             <Container maxWidth="lg" className={classes.containerPaper}>
             <Grid container spacing={2} className={classes.actionSpacer}>
-              {tasks.map(task => {
+              {}
+              {taskList.map(task => {
                 return (filters.length === 0 || filters.includes(task.dueDate) || filters.includes(task.responsible) || filters.includes(task.status)) ?
                   <Grid key={task} xs={12} sm={6} md={4} lg={5} xl={2} item>
                     <Card className={classes.root1} variant="outlined">
@@ -238,7 +246,7 @@ export default function Dashboard(props) {
                   null
               })}
             </Grid>
-            <NewTask fun={handleChangeTasks}/>
+            <NewTask fun={handleUpdateTasks}/>
             </Container>            
       </main>
     </div>
